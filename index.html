@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Escritor por Páginas</title>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <style>
     body {
       background-color: #1e1e1e;
@@ -60,17 +60,15 @@
   </div>
 
   <script>
-    // 🔧 Configuración de tu proyecto Firebase
+    // Tu configuración de Firebase con Firestore
     const firebaseConfig = {
       apiKey: "AIzaSyAeSq0xd3qXQdIwWc6Q3MHa-V18xu8yu4o",
       authDomain: "historyaf-e42ba.firebaseapp.com",
       projectId: "historyaf-e42ba",
-      databaseURL: "https://historyaf-e42ba-default-rtdb.firebaseio.com",
       storageBucket: "historyaf-e42ba.appspot.com"
     };
-
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const db = firebase.firestore();
 
     let paginas = [""];
     let paginaActual = 0;
@@ -108,8 +106,8 @@
       };
 
       try {
-        const ref = await db.ref("historias").push(historia);
-        const link = `https://tusitio.com/historia.html?id=${ref.key}`;
+        const ref = await db.collection("historias").add(historia);
+        const link = `https://tusitio.com/historia.html?id=${ref.id}`;
 
         if (navigator.share) {
           navigator.share({
@@ -118,7 +116,7 @@
             url: link
           });
         } else {
-          alert("Tu historia fue guardada. Copia este link:\n" + link);
+          alert("Tu historia fue guardada. Comparte este link:\n" + link);
         }
       } catch (error) {
         alert("Error al guardar: " + error.message);
