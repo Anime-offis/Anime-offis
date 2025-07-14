@@ -107,7 +107,7 @@
 
       try {
         const ref = await db.collection("historias").add(historia);
-        const link = `https://tusitio.com/historia.html?id=${ref.id}`;
+        const link = `https://anime-offis.github.io/historia.html?id=${ref.id}`;
 
         if (navigator.share) {
           navigator.share({
