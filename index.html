@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Escritor por Páginas</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      background-color: #2c2c2c;
+      color: #fff;
+    }
+    textarea {
+      height: 500px;
+      resize: vertical;
+    }
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 16px;
+      margin: 5px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .navegacion {
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📘 Escribe tu historia por páginas</h1>
+
+  <input type="text" id="titulo" placeholder="Título de la historia" />
+  <input type="text" id="autor" placeholder="Autor o copyright" />
+
+  <textarea id="paginaTexto" placeholder="Escribe aquí la historia..."></textarea>
+
+  <div class="navegacion">
+    <button onclick="anteriorPagina()">⬅️ Anterior</button>
+    <span id="contador">Página 1</span>
+    <button onclick="siguientePagina()">➡️ Siguiente</button>
+    <button onclick="compartirHistoria()">🔗 Compartir historia</button>
+  </div>
+
+  <script>
+    // 🔧 Configuración de tu proyecto Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAeSq0xd3qXQdIwWc6Q3MHa-V18xu8yu4o",
+      authDomain: "historyaf-e42ba.firebaseapp.com",
+      projectId: "historyaf-e42ba",
+      databaseURL: "https://historyaf-e42ba-default-rtdb.firebaseio.com",
+      storageBucket: "historyaf-e42ba.appspot.com"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let paginas = [""];
+    let paginaActual = 0;
+
+    function actualizarVista() {
+      document.getElementById('paginaTexto').value = paginas[paginaActual];
+      document.getElementById('contador').innerText = "Página " + (paginaActual + 1);
+    }
+
+    function siguientePagina() {
+      paginas[paginaActual] = document.getElementById('paginaTexto').value;
+      if (paginaActual === paginas.length - 1) paginas.push("");
+      paginaActual++;
+      actualizarVista();
+    }
+
+    function anteriorPagina() {
+      if (paginaActual > 0) {
+        paginas[paginaActual] = document.getElementById('paginaTexto').value;
+        paginaActual--;
+        actualizarVista();
+      }
+    }
+
+    async function compartirHistoria() {
+      paginas[paginaActual] = document.getElementById('paginaTexto').value;
+      const titulo = document.getElementById('titulo').value || "Sin título";
+      const autor = document.getElementById('autor').value || "Anónimo";
+
+      const historia = {
+        titulo: titulo,
+        autor: autor,
+        paginas: paginas,
+        fecha: new Date().toISOString()
+      };
+
+      try {
+        const ref = await db.ref("historias").push(historia);
+        const link = `https://tusitio.com/historia.html?id=${ref.key}`;
+
+        if (navigator.share) {
+          navigator.share({
+            title: `Historia: ${titulo}`,
+            text: `Lee mi historia aquí:`,
+            url: link
+          });
+        } else {
+          alert("Tu historia fue guardada. Copia este link:\n" + link);
+        }
+      } catch (error) {
+        alert("Error al guardar: " + error.message);
+      }
+    }
+
+    actualizarVista();
+  </script>
+</body>
+</html>
