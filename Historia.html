@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Leer historia</title>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -32,18 +32,17 @@
       apiKey: "AIzaSyAeSq0xd3qXQdIwWc6Q3MHa-V18xu8yu4o",
       authDomain: "historyaf-e42ba.firebaseapp.com",
       projectId: "historyaf-e42ba",
-      databaseURL: "https://historyaf-e42ba-default-rtdb.firebaseio.com",
       storageBucket: "historyaf-e42ba.appspot.com"
     };
-
     firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
     const params = new URLSearchParams(location.search);
     const id = params.get("id");
 
-    firebase.database().ref("historias/" + id).once("value").then(snapshot => {
-      const data = snapshot.val();
-      if (data) {
+    db.collection("historias").doc(id).get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
         document.getElementById("titulo").textContent = data.titulo;
         document.getElementById("autor").textContent = "© " + data.autor;
         let html = "";
@@ -54,6 +53,9 @@
       } else {
         document.getElementById("titulo").textContent = "Historia no encontrada.";
       }
+    }).catch(error => {
+      document.getElementById("titulo").textContent = "Error al cargar.";
+      console.error(error);
     });
   </script>
 </body>
