@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Leer historia</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f2f2f2;
+    }
+    h1 {
+      color: #333;
+    }
+    .pagina {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="titulo">Cargando historia...</h1>
+  <p id="autor"></p>
+  <div id="contenido"></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAeSq0xd3qXQdIwWc6Q3MHa-V18xu8yu4o",
+      authDomain: "historyaf-e42ba.firebaseapp.com",
+      projectId: "historyaf-e42ba",
+      databaseURL: "https://historyaf-e42ba-default-rtdb.firebaseio.com",
+      storageBucket: "historyaf-e42ba.appspot.com"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+
+    firebase.database().ref("historias/" + id).once("value").then(snapshot => {
+      const data = snapshot.val();
+      if (data) {
+        document.getElementById("titulo").textContent = data.titulo;
+        document.getElementById("autor").textContent = "© " + data.autor;
+        let html = "";
+        data.paginas.forEach((p, i) => {
+          html += `<div class="pagina"><h3>Página ${i + 1}</h3><p>${p.replace(/\n/g, "<br>")}</p></div>`;
+        });
+        document.getElementById("contenido").innerHTML = html;
+      } else {
+        document.getElementById("titulo").textContent = "Historia no encontrada.";
+      }
+    });
+  </script>
+</body>
+</html>
