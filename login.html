@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inicio Anónimo</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 100px;
+    }
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 16px 32px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bienvenido a Escritor</h1>
+  <p>Inicia sesión anónimamente para comenzar</p>
+  <button onclick="iniciar()">Empezar</button>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAeSq0xd3qXQdIwWc6Q3MHa-V18xu8yu4o",
+      authDomain: "historyaf-e42ba.firebaseapp.com",
+      projectId: "historyaf-e42ba",
+      storageBucket: "historyaf-e42ba.appspot.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    function iniciar() {
+      firebase.auth().signInAnonymously()
+        .then(() => {
+          // Redirige al editor de historias
+          window.location.href = "index.html";
+        })
+        .catch((error) => {
+          alert("Error al iniciar sesión: " + error.message);
+        });
+    }
+  </script>
+</body>
+</html>
